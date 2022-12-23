@@ -1,0 +1,22 @@
+services:
+  application:
+    build: .
+    ports:
+      - 3000:8080
+    env_file:
+      - ./.config/ide.env
+    volumes:
+      - dind-docker-certs-client:/certs/client:ro
+
+  docker:
+    image: docker:dind
+    privileged: true
+    env_file:
+      - ./.config/docker.env
+    volumes:
+      - dind-docker-certs-ca:/certs/ca
+      - dind-docker-certs-client:/certs/client
+
+volumes:
+  dind-docker-certs-ca:
+  dind-docker-certs-client:
