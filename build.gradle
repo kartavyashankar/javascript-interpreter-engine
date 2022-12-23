@@ -18,3 +18,13 @@ dependencies {
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
+
+task start(type: Exec) {
+	dependsOn build
+	dependsOn test
+	commandLine "sh", "-c", "./build-scripts/start.sh"
+}
+
+task stop(type: Exec) {
+	commandLine "sh", "-c", "./build-scripts/stop.sh"
+}

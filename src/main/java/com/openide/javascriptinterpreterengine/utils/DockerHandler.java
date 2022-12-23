@@ -9,9 +9,7 @@ import com.github.dockerjava.core.DockerClientBuilder;
 public class DockerHandler {
     private static DockerClient getDockerClient() {
         DefaultDockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-                .withDockerHost("tcp://docker:2375")
-                .withDockerTlsVerify("1")
-                .withDockerCertPath("/certs/client").build();
+                .withDockerHost("tcp://docker:2375").build();
         return DockerClientBuilder.getInstance(config).build();
     }
 
