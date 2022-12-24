@@ -12,6 +12,7 @@ import com.github.dockerjava.transport.DockerHttpClient;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 public class DockerHandler {
@@ -68,6 +69,6 @@ public class DockerHandler {
                 .method(DockerHttpClient.Request.Method.GET)
                 .path("/_ping").build();
         DockerHttpClient.Response response = dockerHttpClient.execute(request);
-        return IOUtils.toString(response.getBody());
+        return IOUtils.toString(response.getBody(), StandardCharsets.UTF_8);
     }
 }
