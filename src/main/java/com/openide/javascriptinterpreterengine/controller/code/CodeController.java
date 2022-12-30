@@ -1,5 +1,6 @@
 package com.openide.javascriptinterpreterengine.controller.code;
 
+import com.github.dockerjava.api.exception.DockerException;
 import com.openide.javascriptinterpreterengine.controller.MainController;
 import com.openide.javascriptinterpreterengine.model.code.request.CodeRunRequestModel;
 import com.openide.javascriptinterpreterengine.model.code.response.CodeRunResponseModel;
@@ -22,7 +23,8 @@ public class CodeController extends MainController {
     private CodeService codeService;
 
     @PostMapping("execute")
-    public ResponseEntity<CodeRunResponseModel> executeCode(@RequestBody CodeRunRequestModel codeRunRequest) {
+    public ResponseEntity<CodeRunResponseModel> executeCode(@RequestBody CodeRunRequestModel codeRunRequest)
+            throws InterruptedException, DockerException {
         String output = codeService.runCode(codeRunRequest.getCode());
         return ResponseBuilder.buildResponse(output, HttpStatus.OK);
     }
