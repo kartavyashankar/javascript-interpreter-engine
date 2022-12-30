@@ -16,7 +16,7 @@ public class CodeServiceImpl implements CodeService {
 
     @Override
     public String runCode(String code) throws InterruptedException, DockerException {
-        InspectContainerResponse container = dockerHandler.createContainer("js-engine:custom");
+        InspectContainerResponse container = dockerHandler.createContainer("kartavyashankar/js-engine:v1.0");
         container = dockerHandler.startContainer(container);
         return container.getId();
     }

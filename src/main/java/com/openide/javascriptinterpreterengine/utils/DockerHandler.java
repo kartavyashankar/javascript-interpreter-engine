@@ -28,9 +28,9 @@ import java.util.concurrent.TimeUnit;
 @Component("docker-handler")
 public class DockerHandler {
 
-    private DockerClient dockerClient;
-    private DockerClientConfig config;
-    private DockerHttpClient dockerHttpClient;
+    private final DockerClient dockerClient;
+    private final DockerClientConfig config;
+    private final DockerHttpClient dockerHttpClient;
 
     public DockerHandler() {
         this.config = getDockerClientConfig();
@@ -76,39 +76,22 @@ public class DockerHandler {
         return dockerClient.listImagesCmd().withShowAll(true).exec();
     }
 
-    public void buildImage(String image) throws InterruptedException, DockerException {
-        Set<String> tags = new HashSet<>();
-        tags.add(image);
-
-        if(!imageExists("node:18-alpine")) {
-            boolean pulled = dockerClient.pullImageCmd("node")
-                    .withTag("18-alpine")
-                    .exec(new PullImageResultCallback())
-                    .awaitCompletion(30, TimeUnit.SECONDS);
-            if (!pulled) {
-                throw new DockerException("Error occurred while pulling the image", 500);
-            }
-        }
-
-        boolean built = dockerClient.buildImageCmd()
-                .withDockerfilePath("./NodeCustomDockerfile")
-                .withTags(tags)
-                .withNoCache(true)
-                .withPull(true)
-                .exec(new BuildImageResultCallback())
-                .awaitCompletion(5, TimeUnit.SECONDS);
-        if(!built) {
-            throw new DockerException("Error occurred while building the image", 500);
+    public void pullImage(String image) throws InterruptedException, DockerException {
+        String[] imageTags = image.split(":");
+        boolean pulled = dockerClient.pullImageCmd(imageTags[0])
+                .withTag(imageTags[1])
+                .exec(new PullImageResultCallback())
+                .awaitCompletion(30, TimeUnit.SECONDS);
+        if (!pulled) {
+            throw new DockerException("Error occurred while pulling the image", 500);
         }
     }
 
     public InspectContainerResponse createContainer(String image) throws InterruptedException, DockerException {
         if(!imageExists(image)) {
-            buildImage(image);
+            pullImage(image);
         }
-        CreateContainerResponse container = dockerClient.createContainerCmd(image)
-                .withName("node-js")
-                .withWorkingDir("/home/node").exec();
+        CreateContainerResponse container = dockerClient.createContainerCmd(image).exec();
         return dockerClient.inspectContainerCmd(container.getId()).exec();
     }
 
